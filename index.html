@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex,nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Space Cowboy — Cash &amp; Distribution Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0E1420; --panel:#171F2E; --panel2:#1E2839; --line:#2A3648;
+    --ink:#E9E5D8; --dim:#94A1B4;
+    --brass:#C99A3E; --brass-br:#E4B85A;
+    --sage:#6FA287; --clay:#C4553B; --amber:#D99A4E; --steel:#4E7C8A;
+    --dusk:#7C6BA8; --rust:#C87E4E;
+    --disp:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;
+    --body:'Inter',ui-sans-serif,system-ui,-apple-system,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:
+      radial-gradient(1100px 500px at 78% -8%, #1a2740 0%, transparent 60%),
+      radial-gradient(900px 500px at 8% 4%, #16202f 0%, transparent 55%),
+      var(--bg);
+    color:var(--ink); font-family:var(--body);
+    line-height:1.5; min-height:100vh; padding:0 0 64px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 18px}
+  a{color:var(--brass-br)}
+
+  header{border-bottom:1px solid var(--line);margin-bottom:22px;
+    background:linear-gradient(180deg,#131b28 0%, transparent 100%)}
+  .hd{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+    flex-wrap:wrap;padding:22px 0 18px}
+  .brand{display:flex;flex-direction:column;gap:4px}
+  .mark{font-family:var(--disp);font-weight:700;letter-spacing:.28em;
+    font-size:12px;color:var(--brass);text-transform:uppercase}
+  .mark span{color:var(--dim)}
+  h1{font-family:var(--disp);font-weight:600;font-size:26px;letter-spacing:-.01em;line-height:1.1}
+  .asof{font-family:var(--mono);font-size:11.5px;color:var(--dim);text-align:right;
+    display:flex;flex-direction:column;gap:7px;align-items:flex-end}
+  .pill{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.12em;
+    padding:6px 12px;border-radius:2px;text-transform:uppercase;border:1px solid}
+  .pill.ready{color:#0E1420;background:var(--sage);border-color:var(--sage)}
+  .pill.thin{color:#0E1420;background:var(--amber);border-color:var(--amber)}
+  .pill.dry{color:#fff;background:var(--clay);border-color:var(--clay)}
+
+  .verdict{background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border:1px solid var(--line);border-left:3px solid var(--brass);
+    border-radius:4px;padding:22px 24px;margin-bottom:14px}
+  .verdict .lab{font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+  .verdict .big{font-family:var(--disp);font-weight:700;font-size:clamp(38px,9vw,60px);
+    line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .verdict .read{color:var(--dim);font-size:14.5px;margin-top:10px;max-width:70ch}
+  .pos{color:var(--sage)} .neg{color:var(--clay)} .br{color:var(--brass-br)}
+
+  .warnbar{display:none;margin-bottom:14px;border:1px solid var(--amber);
+    background:#2a2416;border-radius:4px;padding:12px 15px;font-size:13.5px;color:#f0dcae}
+  .warnbar.show{display:block}
+  .warnbar b{color:var(--amber)}
+
+  .gauges{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+  .g{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px}
+  .g .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--dim);margin-bottom:9px}
+  .g .val{font-family:var(--disp);font-weight:600;font-size:23px;font-variant-numeric:tabular-nums}
+  .g .sub{font-size:12px;color:var(--dim);margin-top:3px}
+  .bar{height:7px;border-radius:4px;background:#0d131e;margin-top:11px;overflow:hidden;border:1px solid #0a0f18}
+  .bar > i{display:block;height:100%;border-radius:4px}
+
+  .sec{background:var(--panel);border:1px solid var(--line);border-radius:4px;
+    padding:20px 22px;margin-bottom:14px}
+  .sec > h2{font-family:var(--disp);font-weight:600;font-size:15px;letter-spacing:.02em;
+    display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .sec > h2 .n{font-family:var(--mono);font-size:11px;color:var(--brass);
+    border:1px solid var(--brass);border-radius:2px;padding:1px 6px;font-weight:700}
+  .sec > h2 .tally{font-family:var(--mono);font-size:11px;color:var(--dim);font-weight:400;margin-left:auto}
+  .sec > .hint{color:var(--dim);font-size:13px;margin-bottom:16px;max-width:78ch}
+
+  /* flag engine */
+  .flags{display:flex;flex-direction:column;gap:8px}
+  .flag{display:grid;grid-template-columns:4px 1fr auto;gap:14px;align-items:start;
+    background:var(--panel2);border:1px solid var(--line);border-radius:3px;padding:12px 14px}
+  .flag .sev{border-radius:2px;align-self:stretch;min-height:34px}
+  .flag.red{border-color:#4a2a24} .flag.red .sev{background:var(--clay)}
+  .flag.amber{border-color:#413418} .flag.amber .sev{background:var(--amber)}
+  .flag.ok{border-color:#25382f;opacity:.72} .flag.ok .sev{background:var(--sage)}
+  .flag .ttl{font-size:13.5px;font-weight:600;font-family:var(--disp)}
+  .flag .bd{font-size:12.5px;color:var(--dim);margin-top:3px;line-height:1.45}
+  .flag .fix{font-size:12.5px;color:var(--brass-br);margin-top:5px}
+  .flag .fix b{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--brass);font-weight:700;margin-right:6px}
+  .flag .amt{font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums;
+    white-space:nowrap;text-align:right;padding-top:1px}
+  .flag.red .amt{color:var(--clay)} .flag.amber .amt{color:var(--amber)} .flag.ok .amt{color:var(--sage)}
+  .fbtns{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .fbtn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    padding:6px 11px;border-radius:2px;cursor:pointer;border:1px solid var(--line);
+    background:#0d131e;color:var(--dim)}
+  .fbtn.on{border-color:var(--brass);color:var(--brass-br)}
+
+  .stackbar{display:flex;height:46px;border-radius:3px;overflow:hidden;
+    border:1px solid #0a0f18;background:#0d131e;margin-bottom:4px}
+  .stackbar > span{display:block;min-width:2px;transition:width .35s ease}
+  .scale{display:flex;justify-content:space-between;font-family:var(--mono);
+    font-size:10.5px;color:var(--dim);margin-bottom:18px}
+  .ledger{display:flex;flex-direction:column;gap:2px}
+  .row{display:grid;grid-template-columns:14px 1fr auto auto;gap:12px;align-items:center;
+    padding:9px 0;border-bottom:1px solid #212c3d}
+  .row:last-child{border-bottom:none}
+  .row .dot{width:11px;height:11px;border-radius:2px}
+  .row .name{font-size:13.5px}
+  .row .name small{display:block;color:var(--dim);font-size:11.5px;margin-top:1px}
+  .row .amt{font-family:var(--mono);font-size:13.5px;font-variant-numeric:tabular-nums;text-align:right;min-width:104px}
+  .row .run{font-family:var(--mono);font-size:12px;color:var(--dim);text-align:right;min-width:104px}
+  .row.total{border-top:2px solid var(--line);margin-top:4px;padding-top:12px}
+  .row.total .name{font-family:var(--disp);font-weight:600;font-size:15px}
+  .row.total .amt{font-size:16px;font-weight:700}
+
+  /* wip table */
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table.wip{width:100%;border-collapse:collapse;font-size:12.5px;min-width:720px}
+  table.wip th{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--dim);text-align:right;padding:0 0 9px;border-bottom:1px solid var(--line);font-weight:500}
+  table.wip th:first-child,table.wip th:nth-child(2){text-align:left}
+  table.wip td{padding:9px 0;border-bottom:1px solid #212c3d;text-align:right;
+    font-family:var(--mono);font-variant-numeric:tabular-nums}
+  table.wip td:first-child{text-align:left;color:var(--brass);font-weight:700}
+  table.wip td:nth-child(2){text-align:left;font-family:var(--body);font-variant-numeric:normal}
+  table.wip td.dep{font-weight:700}
+  table.wip tr.hot td.dep{color:var(--clay)}
+  table.wip tr.warm td.dep{color:var(--amber)}
+  table.wip tr.cool td.dep{color:var(--dim)}
+  table.wip tfoot td{border-bottom:none;border-top:2px solid var(--line);padding-top:11px;font-weight:700}
+  .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;
+    border:1px solid;border-radius:2px;padding:1px 5px;margin-left:7px;white-space:nowrap}
+  .tag.r{color:var(--clay);border-color:#4a2a24}
+  .tag.a{color:var(--amber);border-color:#413418}
+
+  .split{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .owner{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:15px 16px}
+  .owner .nm{font-family:var(--disp);font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:baseline}
+  .owner .nm em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--brass)}
+  .owner .oamt{font-family:var(--disp);font-weight:700;font-size:26px;margin-top:6px;font-variant-numeric:tabular-nums}
+  .owner .osub{font-size:12px;color:var(--dim);margin-top:2px}
+
+  /* close rhythm */
+  .steps{display:flex;flex-direction:column;gap:1px}
+  .step{display:grid;grid-template-columns:20px 1fr;gap:12px;align-items:start;
+    padding:10px 0;border-bottom:1px solid #212c3d}
+  .step:last-child{border-bottom:none}
+  .step input{width:16px;height:16px;accent-color:var(--sage);margin-top:2px;cursor:pointer}
+  .step .st{font-size:13.5px}
+  .step .st small{display:block;color:var(--dim);font-size:12px;margin-top:2px}
+  .step.done .st{color:var(--dim);text-decoration:line-through;text-decoration-color:#3a4657}
+  .step.done .st small{text-decoration:none;display:block}
+
+  details.inputs{background:var(--panel);border:1px solid var(--line);border-radius:4px;margin-bottom:14px}
+  details.inputs > summary{cursor:pointer;list-style:none;padding:18px 22px;
+    font-family:var(--disp);font-weight:600;font-size:15px;display:flex;align-items:center;
+    justify-content:space-between;gap:10px}
+  details.inputs > summary::-webkit-details-marker{display:none}
+  details.inputs > summary .chev{font-family:var(--mono);color:var(--brass);font-size:13px;transition:transform .2s}
+  details.inputs[open] > summary .chev{transform:rotate(90deg)}
+  .ibody{padding:4px 22px 22px}
+  .grp{margin-top:20px}
+  .grp:first-child{margin-top:6px}
+  .grp h3{font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;
+    color:var(--brass);margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--line)}
+  .fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:13px 18px}
+  .f{display:flex;flex-direction:column;gap:5px}
+  .f label{font-size:12.5px;color:var(--ink);font-weight:500}
+  .f label .flag2{color:var(--amber);font-family:var(--mono);font-size:10px;font-weight:700;
+    letter-spacing:.08em;margin-left:6px;text-transform:uppercase}
+  .f small{color:var(--dim);font-size:11px;line-height:1.35}
+  .inp{position:relative;display:flex;align-items:center}
+  .inp .pfx{position:absolute;left:11px;font-family:var(--mono);color:var(--dim);font-size:13px;pointer-events:none}
+  .inp input{width:100%;background:#0d131e;border:1px solid var(--line);color:var(--ink);
+    font-family:var(--mono);font-size:14px;padding:9px 11px 9px 24px;border-radius:3px;
+    font-variant-numeric:tabular-nums}
+  .inp input.nopfx{padding-left:11px}
+  .inp input:focus{outline:none;border-color:var(--brass);box-shadow:0 0 0 2px #c99a3e33}
+  .toggle{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink);cursor:pointer;user-select:none}
+  .toggle input{width:16px;height:16px;accent-color:var(--brass)}
+  .ownerrow{display:grid;grid-template-columns:1fr 96px 30px;gap:9px;align-items:center;margin-bottom:9px}
+  .ownerrow input{background:#0d131e;border:1px solid var(--line);color:var(--ink);
+    font-family:var(--mono);font-size:13px;padding:7px 9px;border-radius:3px}
+  .ownerrow input:focus{outline:none;border-color:var(--brass)}
+  .xbtn{background:none;border:1px solid var(--line);color:var(--dim);border-radius:3px;
+    cursor:pointer;padding:6px 0;font-family:var(--mono)}
+  .xbtn:hover{border-color:var(--clay);color:var(--clay)}
+  .addbtn{background:none;border:1px dashed var(--line);color:var(--brass);border-radius:3px;
+    cursor:pointer;padding:8px 12px;font-family:var(--mono);font-size:12px;margin-top:4px}
+  .pctwarn{font-family:var(--mono);font-size:11.5px;margin-top:8px}
+
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin:2px 0 24px;align-items:center}
+  .btn{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+    padding:10px 16px;border-radius:3px;cursor:pointer;border:1px solid var(--line);
+    background:var(--panel);color:var(--ink)}
+  .btn:hover{border-color:var(--brass);color:var(--brass-br)}
+  .btn.primary{background:var(--brass);color:#0E1420;border-color:var(--brass);font-weight:700}
+  .btn.primary:hover{background:var(--brass-br);color:#0E1420}
+  .btn[disabled]{opacity:.5;cursor:default}
+  .status{font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+  .status.ok{color:var(--sage)} .status.bad{color:var(--clay)}
+
+  .notes{font-size:13px;color:var(--dim);line-height:1.6}
+  .notes p{margin-bottom:11px}
+  .notes b{color:var(--ink);font-weight:600}
+  .notes .k{font-family:var(--mono);color:var(--brass);font-size:12px}
+  footer{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:11.5px;color:var(--dim);line-height:1.6}
+
+  @media (max-width:720px){
+    .gauges{grid-template-columns:1fr}
+    .hd{align-items:flex-start}
+    .asof{text-align:left;align-items:flex-start}
+    .row{grid-template-columns:12px 1fr auto;grid-template-rows:auto auto}
+    .row .run{grid-column:2 / 4;text-align:left;min-width:0}
+    .flag{grid-template-columns:4px 1fr;grid-template-rows:auto auto}
+    .flag .amt{grid-column:2;text-align:left;padding-top:6px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap hd">
+    <div class="brand">
+      <div class="mark">Space Cowboy <span>/ Watler &amp; Co</span></div>
+      <h1>Cash &amp; Distribution Console</h1>
+    </div>
+    <div class="asof">
+      <span id="pill" class="pill ready">Ready</span>
+      <span id="asofText">Seeded from JobTread + QuickBooks</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="verdict">
+    <div class="lab">Free cash you could distribute right now</div>
+    <div class="big" id="distNum">$0</div>
+    <div class="read" id="distRead"></div>
+  </div>
+
+  <div class="warnbar" id="warn">
+    <b>Reading is incomplete.</b> <span id="warnText"></span>
+  </div>
+
+  <div class="gauges">
+    <div class="g">
+      <div class="lab">Tax set-aside</div>
+      <div class="val" id="taxVal">$0</div>
+      <div class="sub" id="taxSub"></div>
+      <div class="bar"><i id="taxBar"></i></div>
+    </div>
+    <div class="g">
+      <div class="lab">Working-capital floor</div>
+      <div class="val" id="floorVal">$0</div>
+      <div class="sub" id="floorSub"></div>
+      <div class="bar"><i id="floorBar"></i></div>
+    </div>
+    <div class="g">
+      <div class="lab">Cash runway</div>
+      <div class="val" id="runVal">0.0 mo</div>
+      <div class="sub" id="runSub"></div>
+      <div class="bar"><i id="runBar"></i></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2><span class="n">1</span> Shore up these numbers <span class="tally" id="flagTally"></span></h2>
+    <p class="hint">Everything standing between this console and a number you can bet a distribution on. Worst first. Each one names the fix and where it lives.</p>
+    <div class="fbtns">
+      <button class="fbtn on" data-filt="open">Needs work</button>
+      <button class="fbtn" data-filt="all">Show all</button>
+    </div>
+    <div class="flags" id="flags"></div>
+  </div>
+
+  <div class="sec">
+    <h2><span class="n">2</span> Where the cash is claimed</h2>
+    <p class="hint">Your checking balance carved into who already has a claim on it. What survives every claim is the only money that is truly yours to pull. This is the four-part filter, made visible.</p>
+    <div class="stackbar" id="stack"></div>
+    <div class="scale"><span>$0</span><span id="scaleMax">$0</span></div>
+    <div class="ledger" id="ledger"></div>
+  </div>
+
+  <div class="sec">
+    <h2><span class="n">3</span> Job-by-job: where the deposit money sits <span class="tally" id="wipTally"></span></h2>
+    <p class="hint">Collected is cash in the door, not just invoiced. Earned is actual cost grossed up at the margin below, capped at contract. The gap is customer money for work you have not performed yet. Sorted worst first.</p>
+    <div class="tw">
+      <table class="wip">
+        <thead><tr>
+          <th>Job</th><th>Name</th><th>Contract</th><th>Billed</th><th>Collected</th>
+          <th>Actual cost</th><th>Earned</th><th>Bill %</th><th>Done %</th><th>Held</th>
+        </tr></thead>
+        <tbody id="wipBody"></tbody>
+        <tfoot id="wipFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec" id="splitSec">
+    <h2><span class="n">4</span> If you distributed today</h2>
+    <p class="hint">Split of the free cash above, pro-rata by ownership. Pro-rata means nobody draws out of turn: every distribution goes out in proportion to the share each owner holds.</p>
+    <div class="split" id="split"></div>
+  </div>
+
+  <div class="sec">
+    <h2><span class="n">5</span> Close rhythm</h2>
+    <p class="hint">Monthly you check where you stand. Quarterly you decide whether to draw. Work top to bottom; the flags above should be empty or explained before you reach the last step.</p>
+    <div class="steps" id="steps"></div>
+  </div>
+
+  <details class="inputs" id="inputsPanel">
+    <summary>Update the numbers <span class="chev">&#9656;</span></summary>
+    <div class="ibody">
+
+      <div class="grp">
+        <h3>Cash on hand</h3>
+        <div class="fields">
+          <div class="f"><label>Operating checking</label>
+            <div class="inp"><span class="pfx">$</span><input data-k="checking" /></div>
+            <small>Every operating account you would actually draw from.</small></div>
+          <div class="f"><label>Tax reserve savings</label>
+            <div class="inp"><span class="pfx">$</span><input data-k="taxSavings" /></div>
+            <small>The set-aside account. Not spendable.</small></div>
+        </div>
+      </div>
+
+      <div class="grp">
+        <h3>Claims against the cash</h3>
+        <div class="fields">
+          <div class="f"><label>Customer deposits held</label>
+            <div class="inp"><span class="pfx">$</span><input data-k="deposits" /></div>
+            <small>Collected minus earned across open jobs, approved documents and JobTread actuals only. Recomputes when you change the margin.</small></div>
+          <div class="f"><label>Open vendor bills (JobTread)</label>
+            <div class="inp"><span class="pfx">$</span><input data-k="vendorQbo" /></div>
+            <small>Entered bills still carrying a balance.</small></div>
+          <div class="f"><label>Off-system bills (Venmo, cash)</label>
+            <div class="inp"><span class="pfx">$</span><input data-k="vendorOff" /></div>
+            <small>Unpaid amounts owed outside the system. Paid off-system spend is a flag, not a claim.</small></div>
+          <div class="f"><label>Credit cards</label>
+            <div class="inp"><span class="pfx">$</span><input data-k="cc" /></div>
+            <small>Home Depot, Lowe's, US Bank.</small></div>
+          <div class="f"><label>Line of credit balance</label>
+            <div class="inp"><span class="pfx">$</span><input data-k="loc" /></div>
+            <small>Financing, not a payable. Excluded by default.</small></div>
+          <div class="f"><label class="toggle"><input type="checkbox" data-k="incLoc" /> Count the LOC as a claim</label>
+            <small>On if you intend to clear it before drawing.</small></div>
+        </div>
+      </div>
+
+      <div class="grp">
+        <h3>Floors and holds</h3>
+        <div class="fields">
+          <div class="f"><label>Working-capital floor</label>
+            <div class="inp"><span class="pfx">$</span><input data-k="floor" /></div>
+            <small>The line you never cross. Roughly one month of overhead.</small></div>
+          <div class="f"><label>Monthly overhead</label>
+            <div class="inp"><span class="pfx">$</span><input data-k="overhead" /></div>
+            <small>Wages plus opex, excluding job cost.</small></div>
+          <div class="f"><label>YTD net income</label>
+            <div class="inp"><span class="pfx">$</span><input data-k="ytdNi" /></div>
+            <small>Drives the tax target.</small></div>
+          <div class="f"><label>Tax set-aside rate</label>
+            <div class="inp"><input class="nopfx" data-k="taxPct" /></div>
+            <small>Percent of net income. CPA confirms the real number.</small></div>
+          <div class="f"><label class="toggle"><input type="checkbox" data-k="holdTax" /> Hold the tax shortfall out of free cash</label>
+            <small>On unless the reserve is already funded elsewhere.</small></div>
+        </div>
+      </div>
+
+      <div class="grp">
+        <h3>Receivables and margin</h3>
+        <div class="fields">
+          <div class="f"><label>A/R (JobTread)</label>
+            <div class="inp"><span class="pfx">$</span><input data-k="ar" /></div>
+            <small>Unpaid customer invoices, drafts excluded.</small></div>
+          <div class="f"><label>A/R (QuickBooks balance sheet)</label>
+            <div class="inp"><span class="pfx">$</span><input data-k="qboAr" /></div>
+            <small>Cross-check. A gap here means one system is wrong.</small></div>
+          <div class="f"><label>A/P (QuickBooks balance sheet)</label>
+            <div class="inp"><span class="pfx">$</span><input data-k="qboAp" /></div>
+            <small>Negative means a payment landed without a bill.</small></div>
+          <div class="f"><label>Worst negative aging bucket</label>
+            <div class="inp"><span class="pfx">$</span><input data-k="negBucket" /></div>
+            <small>Enter as a negative. Zero once QuickBooks is clean.</small></div>
+          <div class="f"><label>Collectible share of A/R</label>
+            <div class="inp"><input class="nopfx" data-k="arPct" /></div>
+            <small>Percent you expect to actually collect. Reference only.</small></div>
+          <div class="f"><label>Blended margin, from approved orders</label>
+            <div class="inp"><input class="nopfx" data-k="margin" /></div>
+            <small>Percent. Approved orders sold at 29.0, closed jobs realized 30.3, QuickBooks blended 19.1. Drives the whole table above; stress it downward to see the conservative case.</small></div>
+        </div>
+      </div>
+
+      <div class="grp">
+        <h3>Owners</h3>
+        <div id="owners"></div>
+        <button class="addbtn" id="addOwner">+ Add owner</button>
+        <div class="pctwarn" id="pctWarn"></div>
+      </div>
+
+    </div>
+  </details>
+
+  <div class="actions">
+    <button class="btn primary" id="refreshBtn">Refresh live data</button>
+    <button class="btn" id="saveBtn">Save my numbers</button>
+    <button class="btn" id="resetBtn">Reset to seed</button>
+    <span class="status" id="status"></span>
+  </div>
+
+  <div class="sec">
+    <h2>How to read this</h2>
+    <div class="notes">
+      <p><b>Free cash, not bank balance.</b> The bank balance is a mix of your money and other people's money. Free cash is what is left after customer deposits, vendor bills, cards, the floor you never cross, and the tax you owe but have not set aside. Distribute against free cash, never against the balance.</p>
+      <p><b>Held deposit money is the number that moves everything.</b> It is collected cash minus earned revenue on open jobs. When it runs larger than checking, the deposit money has already been spent, which means the next job's deposit is funding the last job's work. That is the read to fix first, and it is fixed by finishing work, not by billing faster.</p>
+      <p><b>Draft invoices are not billings.</b> JobTread generates the whole payment schedule as drafts the moment an order is approved. Counting them as billed inflates over-billing dramatically. This console counts approved and pending invoices only.</p>
+      <p><b>Everything job-level is approved documents and actuals, never budgets.</b> Contract is approved orders. Billed is issued invoices. Cost is JobTread actuals, voided bills excluded. Earned is actual cost grossed up at the blended margin, capped at contract, because per-job cost columns are not yet trustworthy as a denominator. Three independent reads put the margin at 29.0 sold, 30.3 realized on finished jobs, 27.6 on year-to-date cash flow, so 29 is the default; QuickBooks reads 19.1 only because about $156K of job cost bypassed JobTread.</p>
+      <p><b>QuickBooks supplies the cash side only.</b> Bank balances, cards, the line of credit, and net income live nowhere else, so they come from QuickBooks. Every job-economics number comes from JobTread, and the flags above are the running reconciliation between the two.</p>
+      <p><b>Live refresh needs a Claude surface.</b> Refresh calls JobTread and QuickBooks through your connected accounts. It works when this file is open as an artifact inside Claude. Hosted as a plain web page it stays manual, by design: <span class="k">no credential ever lives in this file.</span></p>
+    </div>
+  </div>
+
+  <footer>
+    Watler &amp; Co LLC dba Space Cowboy. Internal management tool, not an accounting record.
+    Figures come from JobTread and QuickBooks and carry the data-quality issues flagged above.
+    Confirm tax, distribution, and entity treatment with the CPA before acting.
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var KEY="scc_console_v2";
+
+  /* ---------- seed ---------- */
+  var SEED={
+    asOf:"2026-07-22",
+    checking:99814.03, taxSavings:2001.06,
+    ar:99942.58, qboAr:95617.03, qboAp:-2316, negBucket:-45789, arPct:70,
+    custCredits:-4325.55, offSystemCost:155907, bsNi:96016.39, costPlusCollected:13810.23,
+    deposits:214814, depositsAsOf:"2026-07-22",
+    vendorOff:0, vendorQbo:0, cc:29922.18, loc:19569.65, incLoc:false,
+    floor:50000, overhead:44400,
+    ytdNi:73784.91, taxPct:30, holdTax:true,
+    margin:29,
+    drawYtd:12350, distYtd:107825,
+    owners:[{name:"Dominic",pct:70},{name:"Hunter",pct:30}],
+    steps:[false,false,false,false,false,false],
+    /* n=job number, nm=name, k=contract, b=billed(approved+pending), c=collected,
+       a=actual cost, v=vendor bills booked, d=draft invoices sitting unissued */
+    jobs:[
+      {n:"78", nm:"1947 Double C Road",  k:693149.67, b:72066.96,  c:72066.96,  a:0,         v:0,         d:621082.71},
+      {n:"98", nm:"15501 Fox Run",       k:124425.15, b:62212.58,  c:62212.58,  a:12994.59,  v:12994.59,  d:62212.57},
+      {n:"74", nm:"3507 Oakfort Dr",     k:122506.51, b:111767.58, c:110960.91, a:50833.00,  v:50833.00,  d:14623.54},
+      {n:"61", nm:"4319 Shavano Spring", k:49523.31,  b:45853.77,  c:39618.67,  a:14563.04,  v:14563.04,  d:0},
+      {n:"53", nm:"7008 Beckett Rd",     k:101315.66, b:85737.47,  c:84924.97,  a:50086.34,  v:50086.34,  d:16390.69},
+      {n:"49", nm:"401 Battle Bend Blvd",k:61457.05,  b:61457.05,  c:61457.05,  a:33501.65,  v:33501.65,  d:0},
+      {n:"15", nm:"2611 Cuernavaca",     k:133863.68, b:46954.40,  c:46954.40,  a:25820.84,  v:25820.84,  d:86909.28},
+      {n:"79", nm:"31 Valley Spring Rd", k:94783.08,  b:85355.03,  c:85355.03,  a:60619.50,  v:60619.50,  d:10487.65},
+      {n:"92", nm:"182 Shady Bluff Dr",  k:26189.33,  b:24792.67,  c:24792.67,  a:16803.98,  v:16803.98,  d:1396.66},
+      {n:"89", nm:"7112 Fireoak Dr",     k:15204.77,  b:15204.77,  c:15204.77,  a:11416.15,  v:11416.15,  d:0},
+      {n:"91", nm:"178 Shady Bluff Dr",  k:79164.92,  b:64544.79,  c:64544.79,  a:54659.25,  v:54659.25,  d:14620.13},
+      {n:"30", nm:"1034 S Eagle St",     k:254940.78, b:202755.41, c:202237.28, a:172549.86, v:172549.86, d:47185.37},
+      {n:"99", nm:"15314 Artesian Oaks", k:89099.01,  b:78322.92,  c:41680.78,  a:36376.77,  v:36376.77,  d:10776.09},
+      {n:"60", nm:"190 Shady Bluff Dr",  k:150343.14, b:147918.65, c:147918.65, a:122731.39, v:122731.39, d:2424.49},
+      {n:"52", nm:"4303 Hank",           k:106859.93, b:106859.93, c:88259.21,  a:98009.71,  v:98009.71,  d:0},
+      {n:"65", nm:"9108 Ranch Rd",       k:286721.11, b:264956.11, c:230070.79, a:279931.67, v:279931.67, d:4250},
+      {n:"82", nm:"25 Ranch View Trail", k:17836.93,  b:17836.93,  c:17836.93,  a:19119.76,  v:19119.76,  d:0},
+      {n:"101",nm:"4407 Merle Dr",       k:2884.00,   b:2884.00,   c:1442.00,   a:1600.00,   v:1600.00,   d:0},
+      {n:"95", nm:"1018 Stanton Rd",     k:14889.64,  b:0,         c:0,         a:0,         v:0,         d:14889.64}
+    ]
+  };
+
+  var STEPS=[
+    ["Reconcile A/R","JobTread unpaid invoices against the QuickBooks balance sheet. They should land within a few thousand of each other."],
+    ["Refresh deposits held","Re-run the job-by-job pull. Stale past 30 days and the free-cash number is a ceiling, not a read."],
+    ["Confirm the tax sweep","Weekly transfer went out and the reserve is tracking to target."],
+    ["Clear the flags","Everything in section 1 is either fixed or has a written reason it is still open."],
+    ["Compute distributable","Read the verdict at the top. If it is Dry, the answer is no and the quarter ends there."],
+    ["Log the draw decision","Amount, date, pro-rata split, and the reasoning. Quarterly, in writing."]
+  ];
+
+  var NUMF=["checking","taxSavings","ar","qboAr","qboAp","negBucket","arPct","deposits","custCredits","offSystemCost","bsNi","costPlusCollected",
+            "vendorOff","vendorQbo","cc","loc","floor","overhead","ytdNi","taxPct",
+            "margin","drawYtd","distYtd"];
+  var BOOLF=["incLoc","holdTax"];
+  var state=clone(SEED), filt="open";
+
+  /* ---------- storage: artifact window.storage, else localStorage ---------- */
+  var store={
+    get:function(k){
+      if(window.storage&&window.storage.get){
+        return window.storage.get(k).then(function(r){return r&&r.value?r.value:null;})
+          .catch(function(){return null;});
+      }
+      try{return Promise.resolve(localStorage.getItem(k));}catch(e){return Promise.resolve(null);}
+    },
+    set:function(k,v){
+      if(window.storage&&window.storage.set){return window.storage.set(k,v);}
+      try{localStorage.setItem(k,v);return Promise.resolve(true);}catch(e){return Promise.reject(e);}
+    }
+  };
+
+  function clone(o){return JSON.parse(JSON.stringify(o));}
+  function merge(base,over){
+    var o=clone(base);
+    for(var k in over){
+      if(k==="owners"&&Array.isArray(over.owners)){o.owners=over.owners;}
+      else if(k==="jobs"&&Array.isArray(over.jobs)){o.jobs=over.jobs;}
+      else if(k==="steps"&&Array.isArray(over.steps)){o.steps=over.steps;}
+      else if(k in o){o[k]=over[k];}
+    }
+    return o;
+  }
+  function money(n){
+    var neg=n<0; n=Math.round(Math.abs(n));
+    var s=n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+    return (neg?"-$":"$")+s;
+  }
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+  function daysSince(d){
+    if(!d)return 9999;
+    var t=Date.parse(d+"T12:00:00Z"); if(isNaN(t))return 9999;
+    return Math.floor((Date.now()-t)/86400000);
+  }
+  function setStatus(msg,cls){
+    var s=document.getElementById("status");
+    s.textContent=msg||""; s.className="status "+(cls||"");
+  }
+
+  /* ---------- WIP math ---------- */
+  function wip(){
+    var m=Math.min(0.9,Math.max(0,(state.margin||0)/100));
+    var rows=state.jobs.map(function(j){
+      var earned=j.a>0?j.a/(1-m):0;
+      if(j.k>0)earned=Math.min(earned,j.k);
+      var held=Math.max(0,j.c-earned);
+      return {
+        n:j.n, nm:j.nm, k:j.k, b:j.b, c:j.c, a:j.a, v:j.v, d:j.d,
+        earned:earned, held:held,
+        billPct:j.k>0?j.b/j.k*100:0,
+        donePct:j.k>0?earned/j.k*100:0,
+        noCost:(j.a===0&&j.b>0),
+        costGap:Math.max(0,j.v-j.a)
+      };
+    }).sort(function(x,y){return y.held-x.held;});
+    var t={k:0,b:0,c:0,a:0,earned:0,held:0,d:0,costGap:0};
+    rows.forEach(function(r){
+      t.k+=r.k;t.b+=r.b;t.c+=r.c;t.a+=r.a;t.earned+=r.earned;t.held+=r.held;
+      t.d+=r.d;t.costGap+=r.costGap;
+    });
+    return {rows:rows,tot:t};
+  }
+
+  /* ---------- cash math ---------- */
+  function compute(){
+    var s=state;
+    var taxTarget=Math.max(0,s.ytdNi)*(s.taxPct/100);
+    var taxShort=Math.max(0,taxTarget-s.taxSavings);
+    var taxHold=s.holdTax?taxShort:0;
+    var vendors=s.vendorOff+s.vendorQbo;
+    var locClaim=s.incLoc?s.loc:0;
+    var claims=[
+      {key:"deposits",name:"Customer deposits held",note:"unearned, belongs to the customer",amt:s.deposits,color:"var(--dusk)"},
+      {key:"vendors",name:"Vendor bills",note:"open bills plus off-system",amt:vendors,color:"var(--clay)"},
+      {key:"cc",name:"Credit cards",note:"paid down monthly",amt:s.cc,color:"var(--rust)"},
+      {key:"loc",name:"Line of credit",note:s.incLoc?"counted as a claim":"excluded, financing",amt:locClaim,color:"#8A6D3B"},
+      {key:"floor",name:"Working-capital floor",note:"never cross this line",amt:s.floor,color:"var(--steel)"},
+      {key:"tax",name:"Tax hold",note:s.holdTax?"shortfall against the set-aside target":"not held from cash",amt:taxHold,color:"var(--brass)"}
+    ];
+    var claimed=claims.reduce(function(a,c){return a+c.amt;},0);
+    return {taxTarget:taxTarget,taxShort:taxShort,taxHold:taxHold,vendors:vendors,
+      claims:claims,claimed:claimed,dist:s.checking-claimed,
+      collectible:s.ar*(s.arPct/100)};
+  }
+
+  /* ---------- flag engine ---------- */
+  function flags(){
+    var s=state, c=compute(), w=wip(), F=[];
+    function add(sev,ttl,bd,fix,amt){F.push({sev:sev,ttl:ttl,bd:bd,fix:fix,amt:amt});}
+
+    var dAge=daysSince(s.depositsAsOf);
+    if(!s.deposits){
+      add("red","Deposits held is not entered",
+        "The single largest claim on the cash is blank, so the free-cash number above is a ceiling and nothing more.",
+        "Run the job-by-job pull in JobTread: collected minus earned on every open job.","");
+    }else if(dAge>30){
+      add("amber","Deposits held is "+dAge+" days stale",
+        "Jobs moved since this was pulled. Anything past a month drifts far enough to change the verdict.",
+        "Re-run the pull. Refresh live data does it in one click inside Claude.",money(s.deposits));
+    }else{
+      add("ok","Deposits held is current",
+        "Pulled "+(dAge===0?"today":dAge+" day"+(dAge===1?"":"s")+" ago")+" across "+w.rows.length+" open jobs.",
+        "",money(s.deposits));
+    }
+
+    if(c.dist<0){
+      add("red","Deposit money is already spent",
+        "Held deposits of "+money(s.deposits)+" run larger than the "+money(s.checking)+" sitting in checking. Money collected for unperformed work has already gone out the door, so today's jobs are being funded by tomorrow's deposits.",
+        "No distribution this quarter. Close the gap by finishing billed work, not by billing faster.",money(c.dist));
+    }
+
+    var fund=c.taxTarget>0?s.taxSavings/c.taxTarget:1;
+    if(c.taxShort>0){
+      add(fund<0.5?"red":"amber","Tax reserve is short",
+        "Reserve is "+money(s.taxSavings)+" against a "+money(c.taxTarget)+" target at "+s.taxPct+"% of YTD net income. That is "+Math.round(fund*100)+"% funded.",
+        "Keep the weekly transfer running and have the CPA confirm the real rate. Distributions already taken may cover part of it.",money(c.taxShort));
+    }else{
+      add("ok","Tax reserve is funded","Reserve covers the target at the current rate.","",money(s.taxSavings));
+    }
+
+    var gap=Math.abs((s.ar+s.custCredits)-s.qboAr);
+    if(gap>500){
+      add("amber","JobTread and QuickBooks disagree on A/R",
+        "JobTread reads "+money(s.ar)+" and QuickBooks reads "+money(s.qboAr)+". Old customer credits of "+money(s.custCredits)+" explain part of it, but "+money(gap)+" is unexplained, which means invoices are not syncing cleanly.",
+        "Reconcile invoice by invoice. JobTread is the source of truth for receivables.",money(gap));
+    }else{
+      add("ok","A/R reconciles to the penny",
+        "JobTread "+money(s.ar)+" equals QuickBooks "+money(s.qboAr)+" plus "+money(Math.abs(s.custCredits))+" of old customer credit balances. The sync is clean.","",money(s.ar));
+    }
+
+    if(s.custCredits<0){
+      add("amber","Old customer credit balances in QuickBooks",
+        money(s.custCredits)+" sits as negative A/R on two closed jobs (Perryman, 605 Sundial; Wilson, 1311 Rambling), both past 91 days. Money the books say you owe back, or payments applied to the wrong place.",
+        "Jasmine resolves each one: refund it, apply it to a real invoice, or write it off with a note.",money(s.custCredits));
+    }
+
+    if(s.negBucket<0){
+      add("amber","A/R aging buckets are distorted, totals are fine",
+        "A "+money(s.negBucket)+" credit sits in the 61 to 90 bucket for Qureshi. His net total still ties JobTread to the penny, and the report's scary headline is a straight triple count of the true total. Nothing is missing, the aging distribution just cannot be trusted for collections timing.",
+        "Have the phantom bill clawback credit re-dated or re-applied in QuickBooks so buckets read true.",money(s.negBucket));
+    }
+
+    if(s.offSystemCost>10000){
+      add("amber","Job cost is bypassing JobTread",
+        money(s.offSystemCost)+" of year-to-date job cost lives only in QuickBooks: card purchases, Venmo subs, direct expenses that never became JobTread bills. That is roughly 11% on top of recorded job cost, it is why QuickBooks shows a 19% margin while approved orders were sold at 29%, and it quietly understates how complete every job really is.",
+        "Route card and off-system job spend into JobTread as bills going forward. The console runs conservative until then.",money(s.offSystemCost));
+    }
+
+    if(Math.abs(s.bsNi-s.ytdNi)>2000){
+      add("amber","QuickBooks disagrees with itself on net income",
+        "The balance sheet says "+money(s.bsNi)+" of net income, the P&L for the same period says "+money(s.ytdNi)+". A gap of "+money(s.bsNi-s.ytdNi)+" usually means future-dated transactions synced in ahead of time.",
+        "Bookkeeping check with Jasmine. The console uses the P&L figure for the tax target.",money(s.bsNi-s.ytdNi));
+    }
+
+    if(s.qboAp<0){
+      add("amber","A/P is negative in QuickBooks",
+        "A payable cannot be negative. This is a payment applied without a bill behind it.",
+        "Bookkeeping fix. Find the unmatched payment and attach or create the bill.",money(s.qboAp));
+    }
+
+    var noCost=w.rows.filter(function(r){return r.noCost;});
+    if(noCost.length){
+      add("red","Jobs billing with no cost recorded",
+        noCost.map(function(r){return "Job "+r.n+" "+r.nm+", "+money(r.k)+" contract, "+money(r.b)+" billed, zero cost booked";}).join(". ")+". With no cost there is no way to know what is earned, so the whole contract reads as held deposit.",
+        "Build the cost budget and get the vendor bills entered. This is the largest single distortion in the console.",money(noCost.reduce(function(a,r){return a+r.held;},0)));
+    }
+
+    var front=w.rows.filter(function(r){return r.k>0&&!r.noCost&&(r.billPct-r.donePct)>25;});
+    if(front.length){
+      add("red","Front-billed jobs",
+        front.map(function(r){return "Job "+r.n+" at "+Math.round(r.billPct)+"% billed against "+Math.round(r.donePct)+"% complete";}).join(", ")+". Every point of that spread is customer money you are holding against work not yet done.",
+        "Watch these first at close. If one stalls, the deposit turns into a refund conversation.",money(front.reduce(function(a,r){return a+r.held;},0)));
+    }
+
+    if(w.tot.d>50000){
+      add("amber","Draft invoices sitting unissued",
+        money(w.tot.d)+" of customer invoices exist as drafts across the open jobs. Drafts are auto-generated from the payment schedule, so they are not receivables and are not billings, but a large stack usually means real billing milestones have passed unclaimed.",
+        "Walk the draft list and issue anything that is genuinely earned. That is the fastest legitimate cash you have.",money(w.tot.d));
+    }
+
+    var cg=w.rows.filter(function(r){return r.costGap>500;});
+    if(cg.length){
+      add("amber","Approved vendor bills not landing in job cost",
+        cg.map(function(r){return "Job "+r.n+" is "+money(r.costGap)+" light";}).join(", ")+". Approved bills exist but the job's actual cost does not reflect them, which understates completion and overstates held deposits.",
+        "Check the cost coding on those bills. Voided bills are already excluded, so this is a real miss.",money(w.tot.costGap));
+    }
+
+    var loss=w.rows.filter(function(r){return r.k>0&&r.a>=r.k*0.95;});
+    if(loss.length){
+      add("red","Cost has met or passed the contract",
+        loss.map(function(r){return "Job "+r.n+" "+r.nm+" at "+Math.round(r.a/r.k*100)+"% of contract in recorded cost";}).join(". ")+". Everything spent past the contract price is a loss, and off-system spend would push these further.",
+        "Stop-loss review with Dominic: what is left to finish, what can still be billed as a change order, and what gets eaten.",
+        money(loss.reduce(function(a,r){return a+Math.max(0,r.a-r.k);},0)));
+    }
+
+    if(s.costPlusCollected>0){
+      add("amber","Cost-plus job collecting with no cost recorded",
+        "Job 3, 3306 Hyclimb, is cost-plus with "+money(s.costPlusCollected)+" collected and zero cost in JobTread. Cost-plus billing is only defensible when the cost ledger behind it exists.",
+        "Enter its bills in JobTread. It sits outside the deposits model until then.",money(s.costPlusCollected));
+    }
+
+    if(s.checking<s.floor){
+      add("red","Checking is below the working-capital floor",
+        "Balance is "+money(s.checking)+" against a "+money(s.floor)+" floor.",
+        "No distribution until the balance clears the floor.",money(s.floor-s.checking));
+    }
+    var runway=s.overhead>0?(s.checking-s.floor)/s.overhead:0;
+    if(runway<1){
+      add(runway<0.5?"red":"amber","Runway above the floor is under a month",
+        (runway<0?"0":runway.toFixed(1))+" months of overhead at "+money(s.overhead)+" a month.",
+        "Collect A/R and issue earned drafts before anything else.",(runway<0?"0.0":runway.toFixed(1))+" mo");
+    }
+
+
+    var order={red:0,amber:1,ok:2};
+    F.sort(function(a,b){return order[a.sev]-order[b.sev];});
+    return F;
+  }
+
+  /* ---------- render ---------- */
+  function render(){
+    var s=state, c=compute(), w=wip();
+
+    var dn=document.getElementById("distNum");
+    dn.textContent=money(c.dist);
+    dn.className="big "+(c.dist>0?"pos":"neg");
+
+    var oneMonth=s.overhead>0?s.overhead:1, status,pillClass,read;
+    if(c.dist<=0){
+      status="Dry";pillClass="dry";
+      read="Every dollar in checking is already claimed, and then some. There is nothing to distribute. This is the guardrail working, not a failure: pulling money now would come straight back out to finish the jobs.";
+    }else if(c.dist<oneMonth){
+      status="Thin";pillClass="thin";
+      read="There is a little free cash, but less than a month of overhead. You could take a small distribution. Leaving it in gives you room to wait on collections.";
+    }else{
+      status="Ready";pillClass="dry";pillClass="ready";
+      read="Free cash survives every claim with room to spare. This is real, distributable profit, safe to split pro-rata or reinvest on purpose.";
+    }
+    document.getElementById("distRead").textContent=read;
+    var pill=document.getElementById("pill");pill.textContent=status;pill.className="pill "+pillClass;
+    document.getElementById("asofText").textContent=
+      "Approved docs + actuals, JobTread + QuickBooks, "+(s.asOf||"unknown");
+
+    var warn=document.getElementById("warn"), dAge=daysSince(s.depositsAsOf);
+    if(!s.deposits||dAge>30){
+      warn.classList.add("show");
+      document.getElementById("warnText").textContent=!s.deposits
+        ? "Customer deposits held is blank. Until it is filled in, the free-cash figure above is a ceiling, not a promise."
+        : "Customer deposits held was last pulled "+dAge+" days ago. Refresh before you trust the verdict.";
+    }else{warn.classList.remove("show");}
+
+    var taxPctFill=c.taxTarget>0?Math.min(100,(s.taxSavings/c.taxTarget)*100):100;
+    document.getElementById("taxVal").textContent=money(s.taxSavings)+" / "+money(c.taxTarget);
+    document.getElementById("taxSub").textContent=c.taxShort>0?money(c.taxShort)+" short of the target":"Fully funded";
+    var tb=document.getElementById("taxBar");tb.style.width=taxPctFill+"%";
+    tb.style.background=taxPctFill>=100?"var(--sage)":taxPctFill>=50?"var(--amber)":"var(--clay)";
+
+    var floorPct=s.floor>0?Math.min(100,(s.checking/s.floor)*100):100;
+    document.getElementById("floorVal").textContent=money(s.checking);
+    document.getElementById("floorSub").textContent=s.checking>=s.floor
+      ? money(s.checking-s.floor)+" above the floor" : money(s.floor-s.checking)+" below the floor";
+    var fb=document.getElementById("floorBar");fb.style.width=floorPct+"%";
+    fb.style.background=s.checking>=s.floor?"var(--sage)":"var(--clay)";
+
+    var runway=s.overhead>0?(s.checking-s.floor)/s.overhead:0;
+    document.getElementById("runVal").textContent=(runway<0?"0.0":runway.toFixed(1))+" mo";
+    document.getElementById("runSub").textContent="above floor, at current overhead";
+    var rb=document.getElementById("runBar");
+    rb.style.width=Math.max(0,Math.min(100,(runway/3)*100))+"%";
+    rb.style.background=runway>=1.5?"var(--sage)":runway>=0.75?"var(--amber)":"var(--clay)";
+
+    /* flags */
+    var F=flags(), box=document.getElementById("flags");box.innerHTML="";
+    var nRed=F.filter(function(f){return f.sev==="red";}).length;
+    var nAmb=F.filter(function(f){return f.sev==="amber";}).length;
+    document.getElementById("flagTally").textContent=nRed+" critical / "+nAmb+" to watch";
+    F.filter(function(f){return filt==="all"||f.sev!=="ok";}).forEach(function(f){
+      var el=document.createElement("div");el.className="flag "+f.sev;
+      el.innerHTML="<div class='sev'></div><div><div class='ttl'>"+esc(f.ttl)+"</div>"+
+        "<div class='bd'>"+esc(f.bd)+"</div>"+
+        (f.fix?"<div class='fix'><b>Fix</b>"+esc(f.fix)+"</div>":"")+
+        "</div><div class='amt'>"+esc(f.amt||"")+"</div>";
+      box.appendChild(el);
+    });
+
+    /* stacked bar + ledger */
+    var stack=document.getElementById("stack");stack.innerHTML="";
+    var base=Math.max(s.checking,c.claimed,1);
+    c.claims.forEach(function(cl){
+      if(cl.amt<=0)return;
+      var seg=document.createElement("span");
+      seg.style.width=(cl.amt/base*100)+"%";seg.style.background=cl.color;
+      seg.title=cl.name+": "+money(cl.amt);stack.appendChild(seg);
+    });
+    if(c.dist>0){
+      var rem=document.createElement("span");
+      rem.style.width=(c.dist/base*100)+"%";rem.style.background="var(--sage)";
+      rem.title="Distributable: "+money(c.dist);stack.appendChild(rem);
+    }
+    document.getElementById("scaleMax").textContent=money(base);
+
+    var led=document.getElementById("ledger");led.innerHTML="";
+    var running=s.checking;
+    led.appendChild(ledgerRow("var(--brass-br)","Operating checking","the pool we start from",s.checking,null,false));
+    c.claims.forEach(function(cl){
+      running-=cl.amt;
+      led.appendChild(ledgerRow(cl.color,cl.name,cl.note,-cl.amt,running,false));
+    });
+    led.appendChild(ledgerRow(c.dist>=0?"var(--sage)":"var(--clay)","Distributable free cash",
+      c.dist>=0?"what is truly yours to pull":"short by this much, nothing to pull",c.dist,null,true));
+
+    /* wip table */
+    var tb2=document.getElementById("wipBody");tb2.innerHTML="";
+    w.rows.forEach(function(r){
+      var cls=r.held>25000?"hot":r.held>5000?"warm":"cool";
+      var tags="";
+      if(r.noCost)tags+="<span class='tag r'>no cost</span>";
+      else if(r.k>0&&(r.billPct-r.donePct)>25)tags+="<span class='tag r'>front-billed</span>";
+      if(r.costGap>500)tags+="<span class='tag a'>cost gap</span>";
+      var tr=document.createElement("tr");tr.className=cls;
+      tr.innerHTML="<td>"+esc(r.n)+"</td><td>"+esc(r.nm)+tags+"</td>"+
+        "<td>"+money(r.k)+"</td><td>"+money(r.b)+"</td><td>"+money(r.c)+"</td>"+
+        "<td>"+money(r.a)+"</td><td>"+money(r.earned)+"</td>"+
+        "<td>"+Math.round(r.billPct)+"%</td><td>"+Math.round(r.donePct)+"%</td>"+
+        "<td class='dep'>"+money(r.held)+"</td>";
+      tb2.appendChild(tr);
+    });
+    document.getElementById("wipFoot").innerHTML=
+      "<tr><td></td><td>"+w.rows.length+" open jobs</td><td>"+money(w.tot.k)+"</td>"+
+      "<td>"+money(w.tot.b)+"</td><td>"+money(w.tot.c)+"</td><td>"+money(w.tot.a)+"</td>"+
+      "<td>"+money(w.tot.earned)+"</td><td></td><td></td><td class='dep'>"+money(w.tot.held)+"</td></tr>";
+    document.getElementById("wipTally").textContent=
+      "held "+money(w.tot.held)+" at "+s.margin+"% margin";
+
+    /* split */
+    var splitSec=document.getElementById("splitSec"), split=document.getElementById("split");
+    split.innerHTML="";
+    var pool=Math.max(0,c.dist);
+    var totalPct=s.owners.reduce(function(a,o){return a+(o.pct||0);},0);
+    s.owners.forEach(function(o){
+      var share=totalPct>0?pool*(o.pct/100):0;
+      var el=document.createElement("div");el.className="owner";
+      el.innerHTML="<div class='nm'>"+esc(o.name)+" <em>"+(o.pct||0)+"%</em></div>"+
+        "<div class='oamt'>"+money(share)+"</div>"+
+        "<div class='osub'>pro-rata share of "+money(pool)+"</div>";
+      split.appendChild(el);
+    });
+    splitSec.style.opacity=pool>0?"1":"0.55";
+
+    var pw=document.getElementById("pctWarn");
+    if(Math.abs(totalPct-100)>0.01){
+      pw.textContent="Ownership adds to "+totalPct+"%, not 100%.";pw.style.color="var(--amber)";
+    }else{pw.textContent="";}
+
+    /* steps */
+    var sb=document.getElementById("steps");sb.innerHTML="";
+    STEPS.forEach(function(st,i){
+      var done=!!state.steps[i];
+      var el=document.createElement("label");el.className="step"+(done?" done":"");
+      el.innerHTML="<input type='checkbox' "+(done?"checked":"")+" /><div class='st'>"+
+        esc(st[0])+"<small>"+esc(st[1])+"</small></div>";
+      el.querySelector("input").addEventListener("change",function(e){
+        state.steps[i]=e.target.checked;render();
+      });
+      sb.appendChild(el);
+    });
+
+    syncInputs();
+  }
+
+  function ledgerRow(color,name,note,amt,running,isTotal){
+    var el=document.createElement("div");el.className="row"+(isTotal?" total":"");
+    el.innerHTML="<span class='dot' style='background:"+color+"'></span>"+
+      "<div class='name'>"+esc(name)+"<small>"+esc(note)+"</small></div>"+
+      "<div class='amt' style='color:"+(amt<0?"var(--clay)":isTotal?color:"var(--ink)")+"'>"+money(amt)+"</div>"+
+      "<div class='run'>"+(running===null?"":money(running))+"</div>";
+    return el;
+  }
+
+  /* ---------- inputs ---------- */
+  function syncInputs(){
+    document.querySelectorAll("[data-k]").forEach(function(el){
+      var k=el.getAttribute("data-k");
+      if(el.type==="checkbox"){el.checked=!!state[k];}
+      else if(document.activeElement!==el){el.value=state[k];}
+    });
+  }
+  function bindInputs(){
+    document.querySelectorAll("[data-k]").forEach(function(el){
+      var k=el.getAttribute("data-k");
+      if(el.type==="checkbox"){
+        el.addEventListener("change",function(){state[k]=el.checked;render();});
+      }else{
+        el.addEventListener("input",function(){
+          var v=parseFloat(String(el.value).replace(/[^0-9.\-]/g,""));
+          state[k]=isNaN(v)?0:v;
+          if(k==="margin"){state.deposits=Math.round(wip().tot.held);}
+          render();
+        });
+      }
+    });
+  }
+  function renderOwners(){
+    var box=document.getElementById("owners");box.innerHTML="";
+    state.owners.forEach(function(o,i){
+      var r=document.createElement("div");r.className="ownerrow";
+      r.innerHTML="<input value='"+esc(o.name)+"' /><input value='"+(o.pct||0)+"' /><button class='xbtn'>&times;</button>";
+      var ins=r.querySelectorAll("input");
+      ins[0].addEventListener("input",function(){state.owners[i].name=ins[0].value;render();});
+      ins[1].addEventListener("input",function(){
+        var v=parseFloat(ins[1].value.replace(/[^0-9.\-]/g,""));
+        state.owners[i].pct=isNaN(v)?0:v;render();
+      });
+      r.querySelector("button").addEventListener("click",function(){
+        state.owners.splice(i,1);renderOwners();render();
+      });
+      box.appendChild(r);
+    });
+  }
+
+  /* ---------- live refresh ---------- */
+  var JT_QUERY='{"organization":{"$":{"id":"22PDpwii6wUB"},"jobs":{"$":{"where":["closedOn",null],"size":60},"nodes":{"number":{},"name":{},"actualCost":{},"contract":{"_":"documents","$":{"where":{"and":[["type","customerOrder"],["status","approved"],["includeInBudget",true]]}},"sum":{"$":"priceWithTax"}},"billedApproved":{"_":"documents","$":{"where":{"and":[["type","customerInvoice"],["status","approved"]]}},"sum":{"$":"priceWithTax"}},"billedPending":{"_":"documents","$":{"where":{"and":[["type","customerInvoice"],["status","pending"]]}},"sum":{"$":"priceWithTax"}},"billedDraft":{"_":"documents","$":{"where":{"and":[["type","customerInvoice"],["status","draft"]]}},"sum":{"$":"priceWithTax"}},"openAR":{"_":"documents","$":{"where":{"and":[["type","customerInvoice"],["status","!=","draft"],["balance","!=",0]]}},"sum":{"$":"balance"}},"vendorBills":{"_":"documents","$":{"where":{"and":[["type","vendorBill"],["status","in",["approved","pending"]]]}},"sum":{"$":"cost"}}}}}}';
+
+  var PROMPT=
+  "You are a data fetcher. Use the connected JobTread and QuickBooks MCP servers. Do not explain anything.\n\n"+
+  "STEP 1. Call the JobTread query tool with exactly this query object:\n"+JT_QUERY+"\n\n"+
+  "STEP 2. Call the QuickBooks balance sheet tool with date_range THIS_YEAR_TO_DATE, and the QuickBooks profit and loss tool for the current year to date.\n\n"+
+  "STEP 3. Also call the JobTread query tool with:\n"+
+  '{"organization":{"$":{"id":"22PDpwii6wUB"},"documents":{"$":{"size":1,"where":{"and":[["type","vendorBill"],["balance","!=",0]]}},"balanceSum":{"_":"sum","$":"balance"}}}}'+"\n\n"+
+  "STEP 4. Reply with ONE JSON object and nothing else. No prose, no markdown fences.\n"+
+  "Shape:\n"+
+  '{"asOf":"YYYY-MM-DD","checking":0,"taxSavings":0,"qboAr":0,"qboAp":0,"cc":0,"loc":0,"ytdNi":0,"vendorQbo":0,'+
+  '"jobs":[{"n":"job number","nm":"job name","k":contract,"b":billedApproved+billedPending,"c":that minus openAR,"a":actualCost or 0,"v":vendorBills or 0,"d":billedDraft or 0}]}'+"\n"+
+  "Rules: exclude any job whose name contains SANDBOX, EXAMPLE, or TEST BENCH. Exclude jobs where contract, billed and actual cost are all zero or null. "+
+  "Treat every null as 0. Everything job-level comes from approved or issued documents only, never budgets, never drafts, never denied. checking is the sum of operating checking accounts on the balance sheet, taxSavings is the savings or tax reserve account, "+
+  "cc is total credit card liabilities, loc is the line of credit balance, qboAr is accounts receivable, qboAp is accounts payable, ytdNi is net income year to date. "+
+  "vendorQbo is the JobTread open vendor bill balance from step 3. asOf is today.";
+
+  function pullJSON(data){
+    var txt=(data.content||[]).filter(function(b){return b.type==="text";})
+      .map(function(b){return b.text;}).join("\n");
+    txt=txt.replace(/```json/gi,"").replace(/```/g,"").trim();
+    var i=txt.indexOf("{"), j=txt.lastIndexOf("}");
+    if(i<0||j<i)throw new Error("no JSON in response");
+    return JSON.parse(txt.slice(i,j+1));
+  }
+
+  function refresh(){
+    var btn=document.getElementById("refreshBtn");
+    btn.disabled=true;setStatus("Querying JobTread and QuickBooks, about a minute...","");
+    fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-6",
+        max_tokens:8000,
+        messages:[{role:"user",content:PROMPT}],
+        mcp_servers:[
+          {type:"url",url:"https://api.jobtread.com/mcp",name:"jobtread"},
+          {type:"url",url:"https://ai-inc.quickbooks.intuit.com/v1/mcp",name:"quickbooks"}
+        ]
+      })
+    }).then(function(r){return r.json();}).then(function(data){
+      var d=pullJSON(data);
+      ["checking","taxSavings","qboAr","qboAp","cc","loc","ytdNi","vendorQbo"].forEach(function(k){
+        if(typeof d[k]==="number")state[k]=Math.round(d[k]*100)/100;
+      });
+      if(typeof d.qboAr==="number")state.ar=state.ar;
+      if(Array.isArray(d.jobs)&&d.jobs.length){
+        state.jobs=d.jobs.map(function(j){
+          return {n:String(j.n),nm:String(j.nm),k:+j.k||0,b:+j.b||0,c:+j.c||0,
+                  a:+j.a||0,v:+j.v||0,d:+j.d||0};
+        });
+        state.ar=Math.round(state.jobs.reduce(function(a,j){return a+(j.b-j.c);},0)*100)/100;
+        state.deposits=Math.round(wip().tot.held);
+        state.depositsAsOf=d.asOf||new Date().toISOString().slice(0,10);
+      }
+      state.asOf=d.asOf||new Date().toISOString().slice(0,10);
+      render();save(true);
+      setStatus("Updated "+state.asOf+" from live data.","ok");
+    }).catch(function(e){
+      setStatus("Live refresh unavailable here. "+(e&&e.message?e.message:"")+" Enter numbers by hand, or open this file as a Claude artifact.","bad");
+    }).then(function(){btn.disabled=false;});
+  }
+
+  /* ---------- persistence ---------- */
+  function save(quiet){
+    store.set(KEY,JSON.stringify(state)).then(function(){
+      if(!quiet)setStatus("Saved.","ok");
+    }).catch(function(){
+      setStatus("Could not save on this device.","bad");
+    });
+  }
+
+  /* ---------- boot ---------- */
+  document.getElementById("saveBtn").addEventListener("click",function(){save(false);});
+  document.getElementById("resetBtn").addEventListener("click",function(){
+    if(!confirm("Reset every field back to the seeded values?"))return;
+    state=clone(SEED);renderOwners();render();save(true);setStatus("Reset to seed.","");
+  });
+  document.getElementById("refreshBtn").addEventListener("click",refresh);
+  document.getElementById("addOwner").addEventListener("click",function(){
+    state.owners.push({name:"New owner",pct:0});renderOwners();render();
+  });
+  document.querySelectorAll(".fbtn").forEach(function(b){
+    b.addEventListener("click",function(){
+      filt=b.getAttribute("data-filt");
+      document.querySelectorAll(".fbtn").forEach(function(x){x.classList.remove("on");});
+      b.classList.add("on");render();
+    });
+  });
+
+  bindInputs();
+  store.get(KEY).then(function(raw){
+    if(raw){try{state=merge(SEED,JSON.parse(raw));}catch(e){}}
+    renderOwners();render();
+  }).catch(function(){renderOwners();render();});
+})();
+</script>
+</body>
+</html>
